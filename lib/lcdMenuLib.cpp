@@ -134,10 +134,19 @@ void lcd_closeMenu(unsigned int bpm, int btn) {
 
 
 void lcd_changeBpm(unsigned int* bpm, unsigned int speed) {
+    unsigned int multiplier = 1;
     LCD.clear();
     LCD.setCursor(0, 0);
     LCD.print("Solte o botao");
-    while (digitalRead(BTN_1) == LOW || digitalRead(BTN_2) == LOW) {}
+    while (digitalRead(BTN_1) == LOW || digitalRead(BTN_2) == LOW) {
+        if (digitalRead(BTN_3) == LOW) {
+            lcd_clearLine(0);
+            multiplier *= 10;
+            LCD.print(multiplier);
+            LCD.print(" x");
+            delay(500);
+        }
+    }
     LCD.clear();
     lcd_showMenu(2);
     LCD.setCursor(0, 0);
@@ -146,9 +155,9 @@ void lcd_changeBpm(unsigned int* bpm, unsigned int speed) {
     LCD.print(getBPMname(*bpm));
     while (digitalRead(BTN_3) == HIGH) {
         if (digitalRead(BTN_1) == LOW) {
-            *bpm -= speed;
+            *bpm -= speed * multiplier;
             if (*bpm == 0) {
-                *bpm -= speed;
+                *bpm -= speed * multiplier;
             }
             lcd_clearLine(0);
             LCD.print(*bpm);
@@ -156,9 +165,9 @@ void lcd_changeBpm(unsigned int* bpm, unsigned int speed) {
             LCD.print(getBPMname(*bpm));
             delay(100);
         } else if (digitalRead(BTN_2) == LOW) {
-            *bpm += speed;
+            *bpm += speed * multiplier;
             if (*bpm == 0) {
-                *bpm += speed;
+                *bpm += speed * multiplier;
             }
             lcd_clearLine(0);
             LCD.print(*bpm);
